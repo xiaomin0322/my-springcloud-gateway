@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: route
+        uri: http://localhost:8082
+#        uri: http://www.baidu.com
+        predicates:
+        - Path=/gateway/**
+        filters:
+        - StripPrefix=1
