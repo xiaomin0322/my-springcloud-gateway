@@ -2,13 +2,20 @@ server:
   port: 8081
 
 spring:
+  redis:
+    host: 172.19.58.36
+    port: 6379
   cloud:
     gateway:
       routes:
       - id: route
         uri: http://localhost:8082
-#        uri: http://www.baidu.com
         predicates:
         - Path=/gateway/**
         filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 1
+            redis-rate-limiter.burstCapacity: 2
+            key-resolver: "#{@apiKeyResolver}"
         - StripPrefix=1
