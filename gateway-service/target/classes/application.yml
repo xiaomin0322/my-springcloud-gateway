@@ -3,19 +3,23 @@ server:
 
 spring:
   redis:
-    host: 172.19.58.36
-    port: 6379
+    host: 10.23.241.251
+    port: 7001
   cloud:
     gateway:
+      metrics:
+        enabled: true
       routes:
       - id: route
         uri: http://localhost:8082
         predicates:
-        - Path=/gateway/**
+        - Path=/api/**
         filters:
+        ## 限流
         - name: RequestRateLimiter
           args:
             redis-rate-limiter.replenishRate: 1
-            redis-rate-limiter.burstCapacity: 2
+            redis-rate-limiter.burstCapacity: 1
             key-resolver: "#{@apiKeyResolver}"
+        ## 去掉url第一个前缀 /api/test/gateway --》 /test/gateway
         - StripPrefix=1
