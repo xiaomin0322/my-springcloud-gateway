@@ -55,7 +55,8 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 				while (true) {
 					try {
 						Thread.sleep(1000);
-						System.out.println("executorCount:" + boss.executorCount());
+						System.out.println("bossexecutorCount:" + boss.executorCount());
+						System.out.println("workerexecutorCount:" + worker.executorCount());
 						System.out.println("连接数:" + childHandler.totalConnectionNumber.get());
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
