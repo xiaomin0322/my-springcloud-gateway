@@ -18,8 +18,8 @@ spring:
         ## 限流
         - name: RequestRateLimiter
           args:
-            redis-rate-limiter.replenishRate: 1
-            redis-rate-limiter.burstCapacity: 1
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
             key-resolver: "#{@apiKeyResolver}"
         ## 去掉url第一个前缀 /api/test/gateway --》 /test/gateway
         - StripPrefix=1

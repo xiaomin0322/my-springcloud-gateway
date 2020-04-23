@@ -1,4 +1,4 @@
-package com.gittors.gateway.config;
+/*package com.gittors.gateway.config;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,4 +43,4 @@ public class NettyConnectServerHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 
-}
+}*/
