@@ -16,7 +16,7 @@ public class HttpTest {
 		                          .response()                 
 		                          .block();
 			 
-			System.out.println(response.status().code());
+			//System.out.println(response.status().code());
 		}
 		
 	}

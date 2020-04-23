@@ -1,4 +1,4 @@
-package com.gittors.gateway.config;
+/*package com.gittors.gateway.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class NettyWebServerFactoryPortCustomizer implements WebServerFactoryCust
 
 class EventLoopNettyCustomizer implements NettyServerCustomizer {
 
-	/**
+	*//**
 	 * Netty 值得统计的信息 外在信息 连接统计信息：channelActive / channelInactive 收数据统计：channelRead
 	 * 发数据统计：write（写到缓存里），用 ctx.write(msg).addListener() 更准确 异常统计：exceptionCaught /
 	 * ChannelFuture 内在信息 线程数：根据不同实现计算，比如：nioEventLoopGroup.executorCount()；
@@ -39,7 +39,7 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 	 * ———————————————— 版权声明：本文为CSDN博主「乌鲁木齐001号程序员」的原创文章，遵循 CC 4.0 BY-SA
 	 * 版权协议，转载请附上原文出处链接及本声明。
 	 * 原文链接：https://blog.csdn.net/weixin_33669968/java/article/details/104552393
-	 */
+	 *//*
 	  NioEventLoopGroup boss = new NioEventLoopGroup(0, new DefaultThreadFactory("boss"));
       NioEventLoopGroup worker = new NioEventLoopGroup(0, new DefaultThreadFactory("worker"));
       
@@ -69,8 +69,8 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 		return httpServer.tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap ->serverBootstrap
 				.group(boss, worker).childHandler(childHandler).channel(NioServerSocketChannel.class)));
 
-		/*return httpServer.tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap -> serverBootstrap
-				.group(boss, worker).childHandler(childHandler).channel(NioServerSocketChannel.class)));*/
+		return httpServer.tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap -> serverBootstrap
+				.group(boss, worker).childHandler(childHandler).channel(NioServerSocketChannel.class)));
 	}
 
-}
+}*/
