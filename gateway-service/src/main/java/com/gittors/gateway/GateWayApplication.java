@@ -52,7 +52,8 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 		// ThreadPoolExecutor work = (ThreadPoolExecutor)
 		// Executors.newCachedThreadPool();
 
-		ThreadPoolExecutor work = new ThreadPoolExecutor(5, 5, 5L, TimeUnit.SECONDS,
+		//连接数 受限于work线程数，如果设置work最大线程数10，那么最多连接是10
+		ThreadPoolExecutor work = new ThreadPoolExecutor(5, 10, 5L, TimeUnit.SECONDS,
 				// new LinkedBlockingQueue<Runnable>()
 				new ArrayBlockingQueue<>(5));
 		
@@ -61,15 +62,16 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 		// int nThreads, Executor executor；nThreads > executor.nThreads
 
 		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
-		NioEventLoopGroup childGroup = new NioEventLoopGroup(10,work);
+		//io.netty.util.concurrent.ThreadPerTaskExecutor 不指定连接池，默认是新启动一个线程执行任务
+		NioEventLoopGroup childGroup = new NioEventLoopGroup(4);
 		
 
 		EventLoop eventLoop = childGroup.next();
 
 		//final io.netty.util.concurrent.ThreadPerTaskExecutor workExecutor = (io.netty.util.concurrent.ThreadPerTaskExecutor)getExecutor(eventLoop);
 		//当显示得指定了work线程返回得是ThreadPoolExecutor  ：不指定则返回得io.netty.util.concurrent.ThreadPerTaskExecutor
-		final java.util.concurrent.ThreadPoolExecutor workExecutor = (java.util.concurrent.ThreadPoolExecutor)getExecutor(eventLoop);
-		System.out.println("反射拿得  work class = "+workExecutor);
+		//final java.util.concurrent.ThreadPoolExecutor workExecutor = (java.util.concurrent.ThreadPoolExecutor)getExecutor(eventLoop);
+	//	System.out.println("反射拿得  work class = "+workExecutor);
 		
 		MetricHandler childHandler = new MetricHandler();
 
