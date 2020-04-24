@@ -1,7 +1,10 @@
 package com.gittors.gateway;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,11 +45,21 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 	@Override
 	public HttpServer apply(HttpServer httpServer) {
 		ThreadPoolExecutor boss = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-		ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+		//ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+		//ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		
+		ThreadPoolExecutor work =  new ThreadPoolExecutor(10, 50,
+                5L, TimeUnit.SECONDS,
+                //new LinkedBlockingQueue<Runnable>()
+                new ArrayBlockingQueue<>(5)
+				);
+		
+		
 		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
 		NioEventLoopGroup childGroup = new NioEventLoopGroup(40, work);
 		MetricHandler childHandler = new MetricHandler();
 
+		
 		new Thread() {
 			@Override
 			public void run() {
@@ -60,6 +73,10 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 
 						System.out.println("boss当前活跃线程数:" + boss.getActiveCount());
 						System.out.println("work:当前活跃线程数" + work.getActiveCount());
+						
+						
+						System.out.println("boss最高线程数:" + boss.getLargestPoolSize());
+						System.out.println("work:最高线程数" + work.getLargestPoolSize());
 
 						System.out.println("连接数:" + childHandler.totalConnectionNumber.get());
 					} catch (InterruptedException e) {

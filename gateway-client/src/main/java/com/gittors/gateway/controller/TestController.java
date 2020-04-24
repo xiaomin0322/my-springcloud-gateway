@@ -17,6 +17,12 @@ public class TestController {
     @ResponseBody
     public String test() {
     	// log.info("test success");
+    	try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return "success";
     }
 
