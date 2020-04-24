@@ -31,7 +31,7 @@ public class TestController {
     public String test2() {
     	// log.info("test success");
     	try {
-			Thread.sleep(1000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

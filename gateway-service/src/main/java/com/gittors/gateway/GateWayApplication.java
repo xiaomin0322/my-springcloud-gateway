@@ -55,19 +55,21 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 		ThreadPoolExecutor work = new ThreadPoolExecutor(5, 5, 5L, TimeUnit.SECONDS,
 				// new LinkedBlockingQueue<Runnable>()
 				new ArrayBlockingQueue<>(5));
+		
+		System.out.println("work class = "+work);
 
 		// int nThreads, Executor executor；nThreads > executor.nThreads
 
 		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
 		NioEventLoopGroup childGroup = new NioEventLoopGroup(10,work);
 		
-		childGroup = new NioEventLoopGroup();
 
 		EventLoop eventLoop = childGroup.next();
 
-		final io.netty.util.concurrent.ThreadPerTaskExecutor workExecutor = (io.netty.util.concurrent.ThreadPerTaskExecutor)getExecutor(eventLoop);
-		
-		
+		//final io.netty.util.concurrent.ThreadPerTaskExecutor workExecutor = (io.netty.util.concurrent.ThreadPerTaskExecutor)getExecutor(eventLoop);
+		//当显示得指定了work线程返回得是ThreadPoolExecutor  ：不指定则返回得io.netty.util.concurrent.ThreadPerTaskExecutor
+		final java.util.concurrent.ThreadPoolExecutor workExecutor = (java.util.concurrent.ThreadPoolExecutor)getExecutor(eventLoop);
+		System.out.println("反射拿得  work class = "+workExecutor);
 		
 		MetricHandler childHandler = new MetricHandler();
 
