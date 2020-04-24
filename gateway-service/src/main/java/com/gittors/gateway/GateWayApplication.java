@@ -18,20 +18,19 @@ import reactor.netty.http.server.HttpServer;
 
 /**
  * https://www.baeldung.com/spring-boot-reactor-netty
+ * 
  * @author Zengmin.Zhang
  *
  */
 @SpringBootApplication
 public class GateWayApplication {
-	
+
 	@Bean
 	public NettyReactiveWebServerFactory nettyReactiveWebServerFactory() {
-	    NettyReactiveWebServerFactory webServerFactory = new NettyReactiveWebServerFactory();
-	    webServerFactory.addServerCustomizers(new EventLoopNettyCustomizer());
-	    return webServerFactory;
+		NettyReactiveWebServerFactory webServerFactory = new NettyReactiveWebServerFactory();
+		webServerFactory.addServerCustomizers(new EventLoopNettyCustomizer());
+		return webServerFactory;
 	}
-	
-	
 
 	public static void main(String[] args) {
 		SpringApplication.run(GateWayApplication.class, args);
@@ -39,39 +38,38 @@ public class GateWayApplication {
 }
 
 class EventLoopNettyCustomizer implements NettyServerCustomizer {
-	 
-    @Override
-    public HttpServer apply(HttpServer httpServer) {
-    	ThreadPoolExecutor newCachedThreadPoolparentGroup = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-    	ThreadPoolExecutor newCachedThreadPoolchildGroup = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-    	NioEventLoopGroup parentGroup = new NioEventLoopGroup(4,newCachedThreadPoolparentGroup);
-    	NioEventLoopGroup childGroup = new NioEventLoopGroup(4,newCachedThreadPoolchildGroup);
-        MetricHandler childHandler = new MetricHandler();
-        
-     		new Thread() {
-     			@Override
-     			public void run() {
-     				while (true) {
-     					try {
-     						Thread.sleep(1000);
-     						System.out.println("bossexecutorCount:" + parentGroup.executorCount());
-    						System.out.println("workerexecutorCount:" + childGroup.executorCount());
-    						System.out.println("newCachedThreadPoolparentGroup待处理任务:" + newCachedThreadPoolparentGroup.getQueue().size());
-    						System.out.println("newCachedThreadPoolchildGroup:待处理任务" + newCachedThreadPoolparentGroup.getQueue().size());
-     						System.out.println("连接数:" + childHandler.totalConnectionNumber.get());
-     					} catch (InterruptedException e) {
-     						// TODO Auto-generated catch block
-     						e.printStackTrace();
-     					}
-     				}
-     			}
-     		}.start();
-        
-        
-     		
-        return httpServer.tcpConfiguration(tcpServer -> tcpServer
-          .bootstrap(serverBootstrap -> serverBootstrap
-            .group(parentGroup, childGroup).childHandler(childHandler)
-            .channel(NioServerSocketChannel.class)));
-    }
+
+	@Override
+	public HttpServer apply(HttpServer httpServer) {
+		ThreadPoolExecutor boss = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+		ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
+		NioEventLoopGroup childGroup = new NioEventLoopGroup(40, work);
+		MetricHandler childHandler = new MetricHandler();
+
+		new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(1000);
+						System.out.println("boss:总线程数" + parentGroup.executorCount());
+						System.out.println("work:总线程数" + childGroup.executorCount());
+						System.out.println("boss待处理任务:" + boss.getQueue().size());
+						System.out.println("work:待处理任务" + work.getQueue().size());
+
+						System.out.println("boss当前活跃线程数:" + boss.getActiveCount());
+						System.out.println("work:当前活跃线程数" + work.getActiveCount());
+
+						System.out.println("连接数:" + childHandler.totalConnectionNumber.get());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+
+		return httpServer.tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap -> serverBootstrap
+				.group(parentGroup, childGroup).childHandler(childHandler).channel(NioServerSocketChannel.class)));
+	}
 }

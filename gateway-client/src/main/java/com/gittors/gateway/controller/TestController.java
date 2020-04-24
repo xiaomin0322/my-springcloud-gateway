@@ -16,21 +16,21 @@ public class TestController {
     @GetMapping("/test")
     @ResponseBody
     public String test() {
-        log.info("test success");
+    	// log.info("test success");
         return "success";
     }
 
     @GetMapping("/gateway")
     @ResponseBody
     public String test2() {
-        log.info("gateway success");
+        //log.info("gateway success");
         return "gateway success";
     }
 
     @GetMapping("/test/gateway")
     @ResponseBody
     public String test3() {
-        log.info("test gateway success");
+    	// log.info("test gateway success");
         return "test gateway success";
     }
 }
