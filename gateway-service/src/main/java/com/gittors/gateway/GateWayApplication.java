@@ -48,18 +48,18 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 		//ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
 		//ThreadPoolExecutor work = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 		
-		ThreadPoolExecutor work =  new ThreadPoolExecutor(10, 50,
+		ThreadPoolExecutor work =  new ThreadPoolExecutor(5, 5,
                 5L, TimeUnit.SECONDS,
                 //new LinkedBlockingQueue<Runnable>()
                 new ArrayBlockingQueue<>(5)
 				);
 		
+		//int nThreads, Executor executor；nThreads > executor.nThreads
 		
 		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
-		NioEventLoopGroup childGroup = new NioEventLoopGroup(40, work);
+		NioEventLoopGroup childGroup = new NioEventLoopGroup(10, work);
 		MetricHandler childHandler = new MetricHandler();
 
-		
 		new Thread() {
 			@Override
 			public void run() {
@@ -79,6 +79,8 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 						System.out.println("work:最高线程数" + work.getLargestPoolSize());
 
 						System.out.println("连接数:" + childHandler.totalConnectionNumber.get());
+						
+						System.out.println("====================================================:");
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
