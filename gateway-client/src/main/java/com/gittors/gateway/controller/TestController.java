@@ -29,6 +29,13 @@ public class TestController {
     @GetMapping("/gateway")
     @ResponseBody
     public String test2() {
+    	// log.info("test success");
+    	try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         //log.info("gateway success");
         return "gateway success";
     }

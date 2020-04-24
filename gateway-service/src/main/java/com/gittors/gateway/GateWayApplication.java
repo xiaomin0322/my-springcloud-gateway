@@ -60,6 +60,8 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 
 		NioEventLoopGroup parentGroup = new NioEventLoopGroup(4, boss);
 		NioEventLoopGroup childGroup = new NioEventLoopGroup(10,work);
+		
+		childGroup = new NioEventLoopGroup();
 
 		EventLoop eventLoop = childGroup.next();
 
