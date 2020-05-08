@@ -1,14 +1,53 @@
 server:
   port: 8081
 
+management:
+  endpoints:
+    web:
+      # 设置endpoint的路径前缀为 / ，去除默认的 /actuator/ 前缀。这样可以让 prometheus endpoint 与原来保持一致。
+      base-path: /
+      exposure:
+        # https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/htmlsingle/#production-ready-endpoints
+        include: prometheus, health, metrics, gateway #, conditions, configprops, info, mappings, logfile, loggers, scheduledtasks
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        # Whether to enable publishing descriptions as part of the scrape payload to
+        # Prometheus. Turn this off to minimize the amount of data sent on each scrape.
+        descriptions: false
+        # Step size (i.e. reporting frequency) to use.
+        step: 1m
+    # 如果不是用all关闭，就需要指定关闭特定的内容（默认都会采集）。
+    enable:
+      # 目前prometheus主要会关心的指标，除非发现这部分实现有致命缺陷，否则不要关闭。
+      # 命名为 tomcat_metrics 是为了向下兼容减少其它模块的改动。
+      # 实际这部分指标是通过从其它指标项(reactor+jvm+http)中检索近似含义项进行汇总产生的。
+      tomcat_metrics: true
+      reactor: true
+      http: true
+      jvm: true
+      logback: true
+      gateway: false
+      process: false
+      system: false
+      httpcomponents: false
+      hystrix: false
+      cache: false
+      kafka: false
+      # 如果把all设成true，则表示输出所有做了绑定注册的维度指标
+      #all: true
+    # 在所有输出的Meter信息都加上特定的tag
+    #tags:
+    #  application: ${spring.application.name}     
+
+
 spring:
   redis:
     host: 10.23.241.251
     port: 7001
   cloud:
     gateway:
-      metrics:
-        enabled: true
       routes:
       - id: route
         uri: http://localhost:8082
