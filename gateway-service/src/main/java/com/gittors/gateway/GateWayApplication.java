@@ -2,7 +2,6 @@ package com.gittors.gateway;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +17,12 @@ import com.gittors.gateway.config.MetricHandler;
 import io.netty.channel.EventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.internal.ThreadExecutorMap;
 import reactor.netty.http.server.HttpServer;
 
 /**
  * https://www.baeldung.com/spring-boot-reactor-netty
+ * 
+ * https://s0projectreactor0io.icopy.site/docs/netty/release/reference/index.html#_metrics_3
  * 
  * @author Zengmin.Zhang
  *
@@ -103,7 +103,7 @@ class EventLoopNettyCustomizer implements NettyServerCustomizer {
 			}
 		}.start();
 
-		return httpServer.tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap -> serverBootstrap
+		return httpServer.metrics(true).tcpConfiguration(tcpServer -> tcpServer.bootstrap(serverBootstrap -> serverBootstrap
 				.group(parentGroup, childGroup).childHandler(childHandler).channel(NioServerSocketChannel.class)));
 	}
 
